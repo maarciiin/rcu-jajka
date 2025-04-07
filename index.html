@@ -1,39 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kalkulator jajek</title>
   <style>
-    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
-    input { margin: 5px; padding: 5px; }
-    button { padding: 5px 10px; }
-    .result { margin-top: 15px; font-weight: bold; }
+    :root {
+      --bg: #ffffff;
+      --fg: #333333;
+      --accent: #ff4081;
+      --button-hover: #e91e63;
+      --box: #ffffff;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --fg: #eeeeee;
+      --accent: #90caf9;
+      --button-hover: #42a5f5;
+      --box: #1e1e1e;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .container {
+      background: var(--box);
+      border-radius: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: var(--accent);
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 4px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      background: var(--bg);
+      color: var(--fg);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 16px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: var(--button-hover);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .result b {
+      color: var(--button-hover);
+    }
+
+    .egg {
+      font-size: 60px;
+      display: inline-block;
+      transition: transform 0.4s ease;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+
+    .egg.jump {
+      animation: jump 0.5s ease;
+    }
+
+    @keyframes jump {
+      0%   { transform: translateY(0); }
+      30%  { transform: translateY(-20px); }
+      60%  { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h2>Kalkulator otwierania jajek</h2>
-  <label>Liczba jajek na raz:</label>
-  <input type="number" id="eggsPerBatch" value="4"><br>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
-  <label>Czas jednego otwarcia (w sekundach):</label>
-  <input type="number" id="timePerBatch" step="0.001" value="2.568"><br>
+  <div class="container">
+    <div class="egg" id="egg">🥚</div>
+    <h1>Kalkulator otwierania jajek</h1>
+    
+    <label for="eggsPerBatch">Liczba jajek na raz:</label>
+    <input type="number" id="eggsPerBatch" value="4" />
 
-  <button onclick="calculate()">Oblicz</button>
+    <label for="timePerBatch">Czas jednego otwarcia (sekundy):</label>
+    <input type="number" id="timePerBatch" step="0.001" value="2.568" />
 
-  <div class="result" id="result"></div>
+    <button onclick="calculate()">Oblicz</button>
+
+    <div class="result" id="result"></div>
+  </div>
 
   <script>
     function calculate() {
       const eggsPerBatch = parseFloat(document.getElementById("eggsPerBatch").value);
       const timePerBatch = parseFloat(document.getElementById("timePerBatch").value);
 
+      if (isNaN(eggsPerBatch) || isNaN(timePerBatch) || timePerBatch <= 0) {
+        document.getElementById("result").innerHTML = "Wprowadź poprawne wartości!";
+        return;
+      }
+
       const eggsPerSecond = eggsPerBatch / timePerBatch;
-      const eggsPerHour = eggsPerSecond * 3600;
-      const eggsPerDay = eggsPerSecond * 86400;
+      const eggsPerHour = Math.floor(eggsPerSecond * 3600);
+      const eggsPerDay = Math.floor(eggsPerSecond * 86400);
 
       document.getElementById("result").innerHTML = `
-        <p>W 1 godzinę: <b>${Math.floor(eggsPerHour)}</b> jajek</p>
-        <p>W 24 godziny: <b>${Math.floor(eggsPerDay)}</b> jajek</p>
+        <p>W 1 godzinę: <b>${eggsPerHour}</b> jajek</p>
+        <p>W 24 godziny: <b>${eggsPerDay}</b> jajek</p>
       `;
+
+      const egg = document.getElementById("egg");
+      egg.classList.remove("jump");
+      void egg.offsetWidth; // reset animation
+      egg.classList.add("jump");
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+      const button = document.querySelector(".theme-toggle");
+      button.textContent = document.body.classList.contains("dark") ? "🌞" : "🌙";
     }
   </script>
 </body>
