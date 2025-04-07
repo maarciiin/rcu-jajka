@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kalkulator jajek</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+    input { margin: 5px; padding: 5px; }
+    button { padding: 5px 10px; }
+    .result { margin-top: 15px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>Kalkulator otwierania jajek</h2>
+  <label>Liczba jajek na raz:</label>
+  <input type="number" id="eggsPerBatch" value="4"><br>
+
+  <label>Czas jednego otwarcia (w sekundach):</label>
+  <input type="number" id="timePerBatch" step="0.001" value="2.568"><br>
+
+  <button onclick="calculate()">Oblicz</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculate() {
+      const eggsPerBatch = parseFloat(document.getElementById("eggsPerBatch").value);
+      const timePerBatch = parseFloat(document.getElementById("timePerBatch").value);
+
+      const eggsPerSecond = eggsPerBatch / timePerBatch;
+      const eggsPerHour = eggsPerSecond * 3600;
+      const eggsPerDay = eggsPerSecond * 86400;
+
+      document.getElementById("result").innerHTML = `
+        <p>W 1 godzinę: <b>${Math.floor(eggsPerHour)}</b> jajek</p>
+        <p>W 24 godziny: <b>${Math.floor(eggsPerDay)}</b> jajek</p>
+      `;
+    }
+  </script>
+</body>
+</html>
