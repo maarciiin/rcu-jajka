@@ -137,6 +137,9 @@
     <label for="timePerBatch">Czas jednego otwarcia (sekundy):</label>
     <input type="number" id="timePerBatch" step="0.001" value="2.568" />
 
+    <label for="customHours">Czas otwierania (w godzinach):</label>
+    <input type="number" id="customHours" step="0.1" value="5" />
+
     <button onclick="calculate()">Oblicz</button>
 
     <div class="result" id="result"></div>
@@ -146,8 +149,15 @@
     function calculate() {
       const eggsPerBatch = parseFloat(document.getElementById("eggsPerBatch").value);
       const timePerBatch = parseFloat(document.getElementById("timePerBatch").value);
+      const customHours = parseFloat(document.getElementById("customHours").value);
 
-      if (isNaN(eggsPerBatch) || isNaN(timePerBatch) || timePerBatch <= 0) {
+      if (
+        isNaN(eggsPerBatch) || 
+        isNaN(timePerBatch) || 
+        isNaN(customHours) || 
+        timePerBatch <= 0 || 
+        customHours <= 0
+      ) {
         document.getElementById("result").innerHTML = "Wprowadź poprawne wartości!";
         return;
       }
@@ -155,10 +165,12 @@
       const eggsPerSecond = eggsPerBatch / timePerBatch;
       const eggsPerHour = Math.floor(eggsPerSecond * 3600);
       const eggsPerDay = Math.floor(eggsPerSecond * 86400);
+      const eggsCustom = Math.floor(eggsPerSecond * customHours * 3600);
 
       document.getElementById("result").innerHTML = `
-        <p>W 1 godzinę: <b>${eggsPerHour}</b> jajek</p>
-        <p>W 24 godziny: <b>${eggsPerDay}</b> jajek</p>
+        <p>W <b>1 godzinę</b>: <b>${eggsPerHour}</b> jajek</p>
+        <p>W <b>24 godziny</b>: <b>${eggsPerDay}</b> jajek</p>
+        <p>W <b>${customHours}</b>h: <b>${eggsCustom}</b> jajek</p>
       `;
 
       const egg = document.getElementById("egg");
