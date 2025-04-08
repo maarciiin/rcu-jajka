@@ -44,9 +44,9 @@
       transition: background 0.3s;
     }
 
-    h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
+    h1, h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
       color: var(--accent);
     }
 
@@ -87,7 +87,7 @@
 
     .result {
       margin-top: 20px;
-      font-size: 18px;
+      font-size: 16px;
     }
 
     .result b {
@@ -130,7 +130,7 @@
   <div class="container">
     <div class="egg" id="egg">🥚</div>
     <h1>Kalkulator otwierania jajek</h1>
-    
+
     <label for="eggsPerBatch">Liczba jajek na raz:</label>
     <input type="number" id="eggsPerBatch" value="4" />
 
@@ -141,8 +141,14 @@
     <input type="number" id="customHours" step="0.1" value="5" />
 
     <button onclick="calculate()">Oblicz</button>
-
     <div class="result" id="result"></div>
+
+    <h2>🎯 Szansa na peta</h2>
+    <label for="dropChance">Szansa na dropa (%):</label>
+    <input type="number" id="dropChance" step="0.001" value="0.2" />
+
+    <button onclick="calculatePetDrop()">Oblicz drop</button>
+    <div class="result" id="petResult"></div>
   </div>
 
   <script>
@@ -151,13 +157,7 @@
       const timePerBatch = parseFloat(document.getElementById("timePerBatch").value);
       const customHours = parseFloat(document.getElementById("customHours").value);
 
-      if (
-        isNaN(eggsPerBatch) || 
-        isNaN(timePerBatch) || 
-        isNaN(customHours) || 
-        timePerBatch <= 0 || 
-        customHours <= 0
-      ) {
+      if (isNaN(eggsPerBatch) || isNaN(timePerBatch) || isNaN(customHours) || timePerBatch <= 0 || customHours <= 0) {
         document.getElementById("result").innerHTML = "Wprowadź poprawne wartości!";
         return;
       }
@@ -175,8 +175,32 @@
 
       const egg = document.getElementById("egg");
       egg.classList.remove("jump");
-      void egg.offsetWidth; // reset animation
+      void egg.offsetWidth;
       egg.classList.add("jump");
+    }
+
+    function calculatePetDrop() {
+      const eggsPerBatch = parseFloat(document.getElementById("eggsPerBatch").value);
+      const timePerBatch = parseFloat(document.getElementById("timePerBatch").value);
+      const customHours = parseFloat(document.getElementById("customHours").value);
+      const dropChance = parseFloat(document.getElementById("dropChance").value);
+
+      if (isNaN(eggsPerBatch) || isNaN(timePerBatch) || isNaN(customHours) || isNaN(dropChance) || timePerBatch <= 0 || customHours <= 0 || dropChance <= 0) {
+        document.getElementById("petResult").innerHTML = "Wprowadź poprawne wartości!";
+        return;
+      }
+
+      const eggsPerSecond = eggsPerBatch / timePerBatch;
+      const totalEggs = eggsPerSecond * customHours * 3600;
+      const chance = dropChance / 100;
+      const expected = totalEggs * chance;
+      const min = Math.floor(expected - Math.sqrt(expected));
+      const max = Math.ceil(expected + Math.sqrt(expected));
+
+      document.getElementById("petResult").innerHTML = `
+        <p>Teoretycznie trafisz: <b>~${expected.toFixed(1)}</b> petów</p>
+        <p>Zakres losowości: <b>${min}</b> – <b>${max}</b></p>
+      `;
     }
 
     function toggleTheme() {
